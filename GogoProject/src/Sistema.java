@@ -4,6 +4,7 @@ public class Sistema {
 	private LinkedList<Professor> listaProfessores = new LinkedList<Professor>();
 	private LinkedList<Aluno> listaAlunos = new LinkedList<Aluno>();
 	private LinkedList<Empresario> listaEmpresario = new LinkedList<Empresario>();
+	private LinkedList<CADI> listaCadi = new LinkedList<CADI>();
 	
 	public Boolean verificarEmailCadastrado(String email) {
 		for(Professor p: listaProfessores) {
@@ -21,12 +22,54 @@ public class Sistema {
 				return true;
 			}
 		}
+		for(CADI c: listaCadi) {
+			if(c.getDadosLogin().getEmail().equals(email)) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
-	public int cadastrarEmpresario(Empresario e) {
-		if(e.getDadosLogin().getEmail() == null || e.getDadosLogin().getSenha() == null || e.getCpf() == null) {
+	public int cadastrarCadi(CADI c) {
+		try {
+			if(c.getDadosLogin().getEmail() == null || c.getDadosLogin().getEmail() == null || c.getMatricula() == null) {
+				return 400;
+			}
+		}catch (NullPointerException err) {
 			return 400;
+		}
+		if(verificarEmailCadastrado(c.getDadosLogin().getEmail())){
+			return 409;
+		}
+		listaCadi.add(c);
+		return 201;
+	}
+	
+	public CADI loginCadi(DadosLogin dadosLoginCadi) {
+		for(CADI c:listaCadi) {
+			if(c.getDadosLogin() == dadosLoginCadi) {
+				return c;
+			}
+		}
+		return null;
+	}
+	
+	public CADI buscarCadiPorEmail(String email) {
+		for(CADI c:listaCadi) {
+			if(c.getDadosLogin().getEmail().equals(email)) {
+				return c;
+			}
+		}
+		return null;
+	}
+	
+	public int cadastrarEmpresario(Empresario e) {
+		try {
+			if(e.getDadosLogin().getEmail() == null || e.getDadosLogin().getSenha() == null || e.getCpf() == null) {
+				return 400;
+			}
+		}catch (NullPointerException err) {
+				return 400;
 		}
 		if(verificarEmailCadastrado(e.getDadosLogin().getEmail()) == true) {
 			return 409;
@@ -64,7 +107,11 @@ public class Sistema {
 	}
 	
 	public int cadastrarAluno(Aluno a) {
-		if(a.getDadosLogin().getEmail().isEmpty() || a.getDadosLogin().getSenha().isEmpty()) {
+		try {
+			if(a.getDadosLogin().getEmail().isEmpty() || a.getDadosLogin().getSenha().isEmpty()) {
+				return 400;
+			}
+		} catch(NullPointerException err) {
 			return 400;
 		}
 		if(verificarEmailCadastrado(a.getDadosLogin().getEmail()) == true) {
@@ -112,7 +159,11 @@ public class Sistema {
 	}
 	
 	public int cadastrarProfessor(Professor p) {
-		if(p.getDadosLogin().getEmail().isEmpty() || p.getDadosLogin().getSenha().isEmpty() || p.getMatricula().isEmpty()) {
+		try {
+			if(p.getDadosLogin().getEmail().isEmpty() || p.getDadosLogin().getSenha().isEmpty() || p.getMatricula().isEmpty()) {
+				return 400;
+			}
+		}catch(NullPointerException err) {
 			return 400;
 		}
 		if(verificarEmailCadastrado(p.getDadosLogin().getEmail()) == true) {
