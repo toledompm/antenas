@@ -1,8 +1,13 @@
 
 public class CADI {
-	
 	private String matricula;
-	private DadosLogin dadosLogin = new DadosLogin();
+	private DadosLogin dadosLogin;
+	
+	public CADI(String matricula, DadosLogin dadosLogin) {
+		super();
+		this.matricula = matricula;
+		this.dadosLogin = dadosLogin;
+	}
 	
 	public String getMatricula() {
 		return matricula;

@@ -3,6 +3,12 @@ public class DadosLogin {
 	private String email;
 	private String senha;
 	
+	public DadosLogin(String email, String senha) {
+		super();
+		this.email = email;
+		this.senha = senha;
+	}
+	
 	public String getEmail() {
 		return email;
 	}

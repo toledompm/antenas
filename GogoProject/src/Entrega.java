@@ -2,8 +2,18 @@ import java.util.LinkedList;
 public class Entrega {
 	private String linkGit;
 	private String data;
-	private String linkGitOpcional;
-	private LinkedList<String> aluno = new LinkedList<String>();
+	private String linkDeployOpcional;
+	private LinkedList<String> alunos = new LinkedList<String>();
+	
+	public Entrega(String linkGit, String data, String linkDeployOpcional, LinkedList<String> alunos) {
+		super();
+		this.linkGit = linkGit;
+		this.data = data;
+		this.linkDeployOpcional = linkDeployOpcional;
+		for(String a: alunos) {
+			this.alunos.add(a);
+		}
+	}
 	
 	public String getLinkGit() {
 		return linkGit;
@@ -17,17 +27,24 @@ public class Entrega {
 	public void setData(String data) {
 		this.data = data;
 	}
-	public String getLinkGitOpcional() {
-		return linkGitOpcional;
+	public String getLinkDeployOpcional() {
+		return linkDeployOpcional;
 	}
-	public void setLinkGitOpcional(String linkGitOpcional) {
-		this.linkGitOpcional = linkGitOpcional;
+	public void setLinkDeployOpcional(String linkDeployOpcional) {
+		this.linkDeployOpcional = linkDeployOpcional;
 	}
-	public LinkedList<String> getAluno() {
-		return aluno;
+	public LinkedList<String> getAlunos() {
+		return alunos;
 	}
-	public void setAluno(LinkedList<String> aluno) {
-		this.aluno = aluno;
+	public void addAluno(String aluno) {
+		this.alunos.add(aluno);
+	}
+	public void removeAluno(String aluno) {
+		for(String a:this.alunos) {
+			if(a.equals(aluno)) {
+				this.alunos.remove(a);
+			}
+		}
 	}
 	
 

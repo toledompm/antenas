@@ -3,7 +3,13 @@ public class Professor {
 	
 
 	private String matricula;
-	private DadosLogin dadosLogin = new DadosLogin();
+	private DadosLogin dadosLogin;
+	
+	public Professor(String matricula, DadosLogin dadosLogin) {
+		super();
+		this.matricula = matricula;
+		this.dadosLogin = dadosLogin;
+	}
 	
 	public DadosLogin getDadosLogin() {
 		return dadosLogin;

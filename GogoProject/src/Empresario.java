@@ -3,6 +3,12 @@ public class Empresario {
 	private String cpf;
 	private DadosLogin dadosLogin;
 	
+	public Empresario(String cpf, DadosLogin dadosLogin) {
+		super();
+		this.cpf = cpf;
+		this.dadosLogin = dadosLogin;
+	}
+	
 	public String getCpf() {
 		return cpf;
 	}
