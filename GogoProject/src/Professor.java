@@ -1,21 +1,21 @@
 
 public class Professor {
 	
-	private String email;
-	private String senha;
+
 	private String matricula;
+	private DadosLogin dadosLogin;
 	
-	public String getEmail() {
-		return email;
+	public Professor(String matricula, DadosLogin dadosLogin) {
+		super();
+		this.matricula = matricula;
+		this.dadosLogin = dadosLogin;
 	}
-	public void setEmail(String email) {
-		this.email = email;
+	
+	public DadosLogin getDadosLogin() {
+		return dadosLogin;
 	}
-	public String getSenha() {
-		return senha;
-	}
-	public void setSenha(String senha) {
-		this.senha = senha;
+	public void setDadosLogin(DadosLogin dadosLogin) {
+		this.dadosLogin = dadosLogin;
 	}
 	public String getMatricula() {
 		return matricula;

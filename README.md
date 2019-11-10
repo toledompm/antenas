@@ -6,9 +6,10 @@ O sistema (nome-projeto) é uma plataforma web para a integração de alunos em 
 O projeto é dividido em 3 fases.
 ### 1a Fase
 Quando um projeto é criado o empresário deve informar:
-+Titúlo
-+Descrição(Breve)
-+Link de material extra(Opcional)
++ Titúlo
++ Descrição(Breve)
++ Link de material extra(Opcional)
+
 Um membro CADI analisara essas 3 informações e irá definir se dará continuação ao projeto ou não. Se sim, o projeto avançara para a segunda fase.
 ### 2a Fase
 Na segunda fase o empresário deverá informar as seguintes informações adicionais:
