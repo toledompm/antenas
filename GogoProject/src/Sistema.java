@@ -1,4 +1,5 @@
 import java.util.LinkedList;
+import java.util.Random;
 
 public class Sistema {
 	private LinkedList<Professor> professores = new LinkedList<Professor>();
@@ -6,67 +7,84 @@ public class Sistema {
 	private LinkedList<Empresario> empresarios = new LinkedList<Empresario>();
 	private LinkedList<CADI> membrosCadi = new LinkedList<CADI>();
 	private LinkedList<Projeto> projetos = new LinkedList<Projeto>();
+	private LinkedList<String> senhasUsadas = new LinkedList<String>();
 	
+	public LinkedList<Projeto> getProjetos() {
+		return projetos;
+	}
+	public String randomString() {
+		Random rng = new Random();
+		String characters = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890";
+		char[] chars = new char[5];
+	    for (int i = 0; i < 5; i++)
+	    {
+	        chars[i] = characters.charAt(rng.nextInt(characters.length()));
+	    }
+	    return new String(chars);
+	}
+	
+	public int gerarSenha(Projeto proj) {
+		if(projetos.contains(proj) == false) {
+			return 404;
+		}
+		String senha = randomString();
+		while(senhasUsadas.contains(senha)) {
+			senha = randomString();
+		}
+		projetos.get(projetos.indexOf(proj)).setSenha(senha);
+		return 201;
+	}
 	public int empresarioAdicionarDadosFase2(String descricaoAvancada, String linkAvancado, Projeto proj) {
-		for(Projeto p: projetos) {
-			if(p == proj) {
-				if(p.getFase() == 1) {
-					p.setDescricaoAvancada(descricaoAvancada);
-					p.setLinkAvancado(linkAvancado);
-				}
-			}
+		if(projetos.contains(proj) == false) {
+			return 404;
 		}
-		return 404;
+		if(proj.getFase() == 1) {
+			projetos.get(projetos.indexOf(proj)).setDescricaoAvancada(descricaoAvancada);
+			projetos.get(projetos.indexOf(proj)).setLinkAvancado(linkAvancado);
+			return 201;
+		}
+		return 400;
 	}
-	public int aprovarProjetoFase1(Projeto proj) {
-		for(Projeto p:projetos) {
-			if(p == proj) {
-				if(p.getFase() == 0) {
-					p.setFase(1);
-					return 200;
-				}
-				return 400;
-			}
+	public int aprovarProjetoFase2(Projeto proj) {
+		if(projetos.contains(proj) == false) {
+			return 404;
 		}
-		return 404;
+		if(proj.getFase() == 1) {
+			projetos.get(projetos.indexOf(proj)).setFase(2);
+			return 200;
+		}
+		return 400;
 	}
-	public int aprovarProjetoFase2(Projeto proj, String emailCadi) {
-		for(Projeto p:projetos) {
-			if(p == proj) {
-				if(proj.getFase() == 1) {
-					p.setFase(2);
-					p.setMembroCadi(emailCadi);
-					return 200;
-				}
-				return 400;
-			}
+	public int aprovarProjetoFase1(Projeto proj, String emailCadi) {
+		if(projetos.contains(proj) == false) {
+			return 404;
 		}
-		return 404;
+		if(proj.getFase() == 0) {
+			projetos.get(projetos.indexOf(proj)).setFase(1);
+			projetos.get(projetos.indexOf(proj)).setMembroCadi(emailCadi);
+			return 200;
+		}
+		return 400;
 	}
 	public int reprovarProjeto(Projeto proj, String emailCadi) {
-		for(Projeto p:projetos) {
-			if(p == proj) {
-				p.setFase(-1);
-				if(proj.getFase() == 1) {
-					proj.setMembroCadi(emailCadi);
-					return 200;
-				}
-				return 400;
-			}
+		if(projetos.contains(proj) == false) {
+			return 404;
 		}
-		return 404;
+		if(proj.getMembroCadi() == null) {
+			projetos.get(projetos.indexOf(proj)).setMembroCadi(emailCadi);
+		}
+		projetos.get(projetos.indexOf(proj)).setFase(-1);
+		return 200;
 	}
 	public int adicionarProfessorAProjeto(String emailProfessor,Projeto proj) {
-		for(Projeto p: projetos) {
-			if(p == proj) {
-				if(p.getProfessores().contains(emailProfessor)) {
-					return 409;
-				}
-				p.addProfessor(emailProfessor);
-				return 201;
-			}
+		if(projetos.contains(proj) == false) {
+			return 404;
 		}
-		return 404;
+		if(proj.getProfessores().contains(emailProfessor)) {
+			return 409;
+		}
+		projetos.get(projetos.indexOf(proj)).addProfessor(emailProfessor);
+		return 201;
 	}
 	public int alunoEntregarProjeto(Entrega ent, String senha) {
 		for(Projeto p: projetos) {
@@ -80,6 +98,9 @@ public class Sistema {
 	public int alunoParticiparProjeto(String senha, String emailAluno) {
 		for(Projeto p: projetos) {
 			if(p.getSenha().equals(senha)) {
+				if(p.getAlunos().contains(emailAluno) == true) {
+					return 409;
+				}
 				p.addAluno(emailAluno);
 				return 200;
 			}
@@ -140,7 +161,7 @@ public class Sistema {
 	public LinkedList<Projeto> buscarProjetosNaoAvaliados(){
 		LinkedList<Projeto> projetosEncontrados = new LinkedList<Projeto>();
 		for(Projeto p: projetos) {
-			if(p.getMembroCadi().equals(null)) {
+			if(p.getMembroCadi() == null) {
 				projetosEncontrados.add(p);
 			}
 		}
