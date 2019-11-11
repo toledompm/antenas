@@ -5,13 +5,14 @@ public class Sistema {
 	private LinkedList<Professor> professores = new LinkedList<Professor>();
 	private LinkedList<Aluno> alunos = new LinkedList<Aluno>();
 	private LinkedList<Empresario> empresarios = new LinkedList<Empresario>();
-	private LinkedList<CADI> membrosCadi = new LinkedList<CADI>();
+	private LinkedList<MembroCadi> membrosCadi = new LinkedList<MembroCadi>();
 	private LinkedList<Projeto> projetos = new LinkedList<Projeto>();
 	private LinkedList<String> senhasUsadas = new LinkedList<String>();
 	
 	public LinkedList<Projeto> getProjetos() {
 		return projetos;
 	}
+	
 	public String randomString() {
 		Random rng = new Random();
 		String characters = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890";
@@ -22,7 +23,15 @@ public class Sistema {
 	    }
 	    return new String(chars);
 	}
-	
+	public LinkedList<Projeto> buscarProjetosPorTituloParcial(String pesquisa, LinkedList<Projeto> projs) {
+		LinkedList<Projeto> projetosEncontrados = new LinkedList<Projeto>();
+		for(Projeto p: projs) {
+			if(p.getTitulo().contains(pesquisa)) {
+				projetosEncontrados.add(p);
+			}
+		}
+		return projetosEncontrados;
+	}
 	public int gerarSenha(Projeto proj) {
 		if(projetos.contains(proj) == false) {
 			return 404;
@@ -34,14 +43,24 @@ public class Sistema {
 		projetos.get(projetos.indexOf(proj)).setSenha(senha);
 		return 201;
 	}
-	public int empresarioAdicionarDadosFase2(String descricaoAvancada, String linkAvancado, Projeto proj) {
+	public int addDadosFase2(String descricaoAvancada, String linkAvancado, Projeto proj) {
 		if(projetos.contains(proj) == false) {
 			return 404;
 		}
-		if(proj.getFase() == 1) {
+		if(proj.getStatus() == 1) {
 			projetos.get(projetos.indexOf(proj)).setDescricaoAvancada(descricaoAvancada);
 			projetos.get(projetos.indexOf(proj)).setLinkAvancado(linkAvancado);
 			return 201;
+		}
+		return 400;
+	}
+	public int finalizarProjeto(Projeto proj) {
+		if(projetos.contains(proj) == false) {
+			return 404;
+		}
+		if(proj.getStatus() == 2) {
+			projetos.get(projetos.indexOf(proj)).setStatus(3);
+			return 200;
 		}
 		return 400;
 	}
@@ -49,8 +68,8 @@ public class Sistema {
 		if(projetos.contains(proj) == false) {
 			return 404;
 		}
-		if(proj.getFase() == 1) {
-			projetos.get(projetos.indexOf(proj)).setFase(2);
+		if(proj.getStatus() == 1) {
+			projetos.get(projetos.indexOf(proj)).setStatus(2);
 			return 200;
 		}
 		return 400;
@@ -59,8 +78,8 @@ public class Sistema {
 		if(projetos.contains(proj) == false) {
 			return 404;
 		}
-		if(proj.getFase() == 0) {
-			projetos.get(projetos.indexOf(proj)).setFase(1);
+		if(proj.getStatus() == 0) {
+			projetos.get(projetos.indexOf(proj)).setStatus(1);
 			projetos.get(projetos.indexOf(proj)).setMembroCadi(emailCadi);
 			return 200;
 		}
@@ -73,10 +92,10 @@ public class Sistema {
 		if(proj.getMembroCadi() == null) {
 			projetos.get(projetos.indexOf(proj)).setMembroCadi(emailCadi);
 		}
-		projetos.get(projetos.indexOf(proj)).setFase(-1);
+		projetos.get(projetos.indexOf(proj)).setStatus(-1);
 		return 200;
 	}
-	public int adicionarProfessorAProjeto(String emailProfessor,Projeto proj) {
+	public int addProfessorProjeto(String emailProfessor,Projeto proj) {
 		if(projetos.contains(proj) == false) {
 			return 404;
 		}
@@ -125,7 +144,7 @@ public class Sistema {
 	public LinkedList<Projeto> buscarProjetoPorEmpresario(String emailEmp) {
 		LinkedList<Projeto> projetosEncontrados = new LinkedList<Projeto>();
 		for(Projeto p: projetos) {
-			if(p.getEmpresario().equals(emailEmp)) {
+			if(p.getEmpresario().equals(emailEmp) && p.isExcluido() == false) {
 				projetosEncontrados.add(p);
 			}
 		}
@@ -134,7 +153,7 @@ public class Sistema {
 	public LinkedList<Projeto> buscarProjetosPorMebroCadi(String emailCadi) {
 		LinkedList<Projeto> projetosEncontrados = new LinkedList<Projeto>();
 		for(Projeto p: projetos) {
-			if(p.getMembroCadi().equals(emailCadi)) {
+			if(p.getMembroCadi().equals(emailCadi) && p.isExcluido() == false) {
 				projetosEncontrados.add(p);
 			}
 		}
@@ -143,7 +162,7 @@ public class Sistema {
 	public LinkedList<Projeto> buscarProjetosPorProfessor(String emailProfessor) {
 		LinkedList<Projeto> projetosEncontrados = new LinkedList<Projeto>();
 		for(Projeto p: projetos) {
-			if(p.getProfessores().contains(emailProfessor)) {
+			if(p.getProfessores().contains(emailProfessor) && p.isExcluido() == false) {
 				projetosEncontrados.add(p);
 			}
 		}
@@ -152,16 +171,53 @@ public class Sistema {
 	public LinkedList<Projeto> buscarProjetosPorAluno(String emailAluno) {
 		LinkedList<Projeto> projetosEncontrados = new LinkedList<Projeto>();
 		for(Projeto p: projetos) {
-			if(p.getAlunos().contains(emailAluno)) {
+			if(p.getAlunos().contains(emailAluno) && p.isExcluido() == false) {
 				projetosEncontrados.add(p);
 			}
 		}
 		return projetosEncontrados;
 	}
-	public LinkedList<Projeto> buscarProjetosNaoAvaliados(){
+	public LinkedList<Projeto> buscarProjetoFinalizadosPorEmpresario(String emailEmp) {
 		LinkedList<Projeto> projetosEncontrados = new LinkedList<Projeto>();
 		for(Projeto p: projetos) {
-			if(p.getMembroCadi() == null) {
+			if(p.getEmpresario().equals(emailEmp) && p.isExcluido() == false && p.getStatus() == 3) {
+				projetosEncontrados.add(p);
+			}
+		}
+		return projetosEncontrados;
+	}
+	public LinkedList<Projeto> buscarProjetosFinalizadosPorMebroCadi(String emailCadi) {
+		LinkedList<Projeto> projetosEncontrados = new LinkedList<Projeto>();
+		for(Projeto p: projetos) {
+			if(p.getMembroCadi().equals(emailCadi) && p.isExcluido() == false && p.getStatus() == 3) {
+				projetosEncontrados.add(p);
+			}
+		}
+		return projetosEncontrados;
+	}
+	public LinkedList<Projeto> buscarProjetosFinalizadosPorProfessor(String emailProfessor) {
+		LinkedList<Projeto> projetosEncontrados = new LinkedList<Projeto>();
+		for(Projeto p: projetos) {
+			if(p.getProfessores().contains(emailProfessor) && p.isExcluido() == false && p.getStatus() == 3) {
+				projetosEncontrados.add(p);
+			}
+		}
+		return projetosEncontrados;
+	}
+	public LinkedList<Projeto> buscarProjetosFinalizadosPorAluno(String emailAluno) {
+		LinkedList<Projeto> projetosEncontrados = new LinkedList<Projeto>();
+		for(Projeto p: projetos) {
+			if(p.getAlunos().contains(emailAluno) && p.isExcluido() == false && p.getStatus() == 3) {
+				projetosEncontrados.add(p);
+			}
+		}
+		return projetosEncontrados;
+	}
+	
+	public LinkedList<Projeto> buscarProjetosSemAvaliacao(){
+		LinkedList<Projeto> projetosEncontrados = new LinkedList<Projeto>();
+		for(Projeto p: projetos) {
+			if(p.getMembroCadi() == null && p.isExcluido() == false) {
 				projetosEncontrados.add(p);
 			}
 		}
@@ -183,7 +239,7 @@ public class Sistema {
 				return true;
 			}
 		}
-		for(CADI c: membrosCadi) {
+		for(MembroCadi c: membrosCadi) {
 			if(c.getDadosLogin().getEmail().equals(email)) {
 				return true;
 			}
@@ -191,7 +247,7 @@ public class Sistema {
 		return false;
 	}
 	
-	public int cadastrarCadi(CADI c) {
+	public int cadastrarCadi(MembroCadi c) {
 		try {
 			if(c.getDadosLogin().getEmail() == null || c.getDadosLogin().getEmail() == null || c.getMatricula() == null) {
 				return 400;
@@ -206,8 +262,8 @@ public class Sistema {
 		return 201;
 	}
 	
-	public CADI loginCadi(DadosLogin dadosLoginCadi) {
-		for(CADI c:membrosCadi) {
+	public MembroCadi loginCadi(DadosLogin dadosLoginCadi) {
+		for(MembroCadi c:membrosCadi) {
 			if(c.getDadosLogin() == dadosLoginCadi) {
 				return c;
 			}
@@ -215,8 +271,8 @@ public class Sistema {
 		return null;
 	}
 	
-	public CADI buscarCadiPorEmail(String email) {
-		for(CADI c:membrosCadi) {
+	public MembroCadi buscarCadiPorEmail(String email) {
+		for(MembroCadi c:membrosCadi) {
 			if(c.getDadosLogin().getEmail().equals(email)) {
 				return c;
 			}

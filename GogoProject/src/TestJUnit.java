@@ -97,11 +97,11 @@ public class TestJUnit {
 		projeto.setMembroCadi(emailMembroCadiProjeto);
 		projeto.setDescricaoAvancada(descricaoAvancadaProjeto);
 		projeto.setLinkAvancado(linkAvancadoProjeto);
-		projeto.setFase(faseProjeto);
+		projeto.setStatus(faseProjeto);
 		assertEquals(projeto.getMembroCadi(),emailMembroCadiProjeto);
 		assertEquals(projeto.getDescricaoAvancada(),descricaoAvancadaProjeto);
 		assertEquals(projeto.getLinkAvancado(),linkAvancadoProjeto);
-		assertEquals(projeto.getFase(),faseProjeto);
+		assertEquals(projeto.getStatus(),faseProjeto);
 		
 		projeto.setDescricao(descricaoSecundaria);
 		projeto.setLink(linkSecundario);
@@ -165,17 +165,17 @@ public class TestJUnit {
 	@Test
 	public void testCadi() {
 		DadosLogin dadosLoginCadi = new DadosLogin(emailCadi,senhaCadi);
-		CADI cadi = new CADI(matriculaCadi,dadosLoginCadi);
+		MembroCadi membroCadi = new MembroCadi(matriculaCadi,dadosLoginCadi);
 		
-		assertEquals(cadi.getDadosLogin(),dadosLoginCadi);
-		assertEquals(cadi.getMatricula(),matriculaCadi);
+		assertEquals(membroCadi.getDadosLogin(),dadosLoginCadi);
+		assertEquals(membroCadi.getMatricula(),matriculaCadi);
 		
 		DadosLogin dadosLoginCadiSecundario = new DadosLogin(emailCadiSecundario,senhaCadiSecundaria);
-		cadi.setDadosLogin(dadosLoginCadiSecundario);
-		cadi.setMatricula(matriculaCadiSecundaria);
+		membroCadi.setDadosLogin(dadosLoginCadiSecundario);
+		membroCadi.setMatricula(matriculaCadiSecundaria);
 		
-		assertEquals(cadi.getDadosLogin(),dadosLoginCadiSecundario);
-		assertEquals(cadi.getMatricula(),matriculaCadiSecundaria);
+		assertEquals(membroCadi.getDadosLogin(),dadosLoginCadiSecundario);
+		assertEquals(membroCadi.getMatricula(),matriculaCadiSecundaria);
 	}
 	
 	@Test
@@ -241,9 +241,9 @@ public class TestJUnit {
 		Empresario empresarioNulo = new Empresario(null,null);
 		
 		DadosLogin dadosLoginCadi = new DadosLogin(emailCadi,senhaCadi);
-		CADI cadi = new CADI(matriculaCadi,dadosLoginCadi);
-		CADI cadiRepetido = new CADI(matriculaCadi,dadosLoginCadi);
-		CADI cadiNulo = new CADI(null,null);
+		MembroCadi membroCadi = new MembroCadi(matriculaCadi,dadosLoginCadi);
+		MembroCadi cadiRepetido = new MembroCadi(matriculaCadi,dadosLoginCadi);
+		MembroCadi cadiNulo = new MembroCadi(null,null);
 		
 		LinkedList<String> alunos = new LinkedList<String>();
 		alunos.add(emailAluno);
@@ -259,20 +259,20 @@ public class TestJUnit {
 		assertEquals(sis.cadastrarProjeto(projetoRepetido),409);
 		assertEquals(sis.buscarProjetoPorEmpresario(emailEmpresario).contains(projeto),true);
 		assertEquals(sis.buscarProjetoPorEmpresario(emailEmpresarioSecundario).isEmpty(),true);
-		assertEquals(sis.buscarProjetosNaoAvaliados().isEmpty(),false);
-		assertEquals(sis.empresarioAdicionarDadosFase2(descricaoAvancadaProjeto, linkAvancadoProjeto, projeto),400);
+		assertEquals(sis.buscarProjetosSemAvaliacao().isEmpty(),false);
+		assertEquals(sis.addDadosFase2(descricaoAvancadaProjeto, linkAvancadoProjeto, projeto),400);
 		
 		assertEquals(sis.aprovarProjetoFase1(projeto, emailCadi),200);
-		assertEquals(sis.buscarProjetosNaoAvaliados().isEmpty(),true);
+		assertEquals(sis.buscarProjetosSemAvaliacao().isEmpty(),true);
 		assertEquals(sis.aprovarProjetoFase1(projeto, emailCadi),400);
 		assertEquals(sis.aprovarProjetoFase1(null, emailCadi),404);
 		assertEquals(sis.buscarProjetosPorMebroCadi(emailCadi).contains(projeto),true);
 		assertEquals(sis.buscarProjetosPorMebroCadi(emailCadiSecundario).isEmpty(),true);
 		
 		
-		assertEquals(sis.adicionarProfessorAProjeto(emailProfessor, projeto),201);
-		assertEquals(sis.adicionarProfessorAProjeto(emailProfessor, projeto),409);
-		assertEquals(sis.adicionarProfessorAProjeto(emailProfessor, null),404);
+		assertEquals(sis.addProfessorProjeto(emailProfessor, projeto),201);
+		assertEquals(sis.addProfessorProjeto(emailProfessor, projeto),409);
+		assertEquals(sis.addProfessorProjeto(emailProfessor, null),404);
 		assertEquals(sis.buscarProjetosPorProfessor(emailProfessor).contains(projeto),true);
 		assertEquals(sis.buscarProjetosPorProfessor(emailProfessorSecundario).isEmpty(),true);
 		
@@ -286,8 +286,8 @@ public class TestJUnit {
 		assertEquals(sis.buscarProjetosPorAluno(emailAluno).contains(projeto),true);
 		assertEquals(sis.buscarProjetosPorAluno(emailAlunoSecundario).isEmpty(),true);
 		
-		assertEquals(sis.empresarioAdicionarDadosFase2(descricaoAvancadaProjeto, linkAvancadoProjeto, projeto),201);
-		assertEquals(sis.empresarioAdicionarDadosFase2(descricaoAvancadaProjeto, linkAvancadoProjeto, null),404);
+		assertEquals(sis.addDadosFase2(descricaoAvancadaProjeto, linkAvancadoProjeto, projeto),201);
+		assertEquals(sis.addDadosFase2(descricaoAvancadaProjeto, linkAvancadoProjeto, null),404);
 		
 		assertEquals(sis.aprovarProjetoFase2(projeto),200);
 		assertEquals(sis.aprovarProjetoFase2(projeto),400);
@@ -298,15 +298,15 @@ public class TestJUnit {
 		
 		sis.cadastrarProjeto(projetoSecundario);
 		assertEquals(sis.reprovarProjeto(projetoSecundario, emailCadi),200);
-		assertEquals(sis.getProjetos().getLast().getFase(),-1);
+		assertEquals(sis.getProjetos().getLast().getStatus(),-1);
 		assertEquals(sis.buscarProjetosPorMebroCadi(emailCadi).getLast(),projetoSecundario);
 		
-		assertEquals(sis.cadastrarCadi(cadi), 201);
+		assertEquals(sis.cadastrarCadi(membroCadi), 201);
 		assertEquals(sis.cadastrarCadi(cadiRepetido), 409);
 		assertEquals(sis.cadastrarCadi(cadiNulo), 400);
-		assertEquals(sis.loginCadi(dadosLoginCadi),cadi);
+		assertEquals(sis.loginCadi(dadosLoginCadi),membroCadi);
 		assertEquals(sis.loginCadi(null), null);
-		assertEquals(sis.buscarCadiPorEmail(emailCadi),cadi);
+		assertEquals(sis.buscarCadiPorEmail(emailCadi),membroCadi);
 		assertEquals(sis.buscarCadiPorEmail(null),null);
 		
 		assertEquals(sis.cadastrarEmpresario(empresario), 201);

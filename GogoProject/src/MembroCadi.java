@@ -1,9 +1,9 @@
 
-public class CADI {
+public class MembroCadi {
 	private String matricula;
 	private DadosLogin dadosLogin;
 	
-	public CADI(String matricula, DadosLogin dadosLogin) {
+	public MembroCadi(String matricula, DadosLogin dadosLogin) {
 		super();
 		this.matricula = matricula;
 		this.dadosLogin = dadosLogin;

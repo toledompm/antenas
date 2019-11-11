@@ -11,7 +11,8 @@ public class Projeto {
 	private String empresario;
 	private String membroCadi;
 	private String senha;
-	private int fase;
+	private int status;
+	private boolean excluido;
 	
 	public Projeto(LinkedList<Entrega> entregas, String descricao, String descricaoAvancada, String titulo, String link,
 			String linkAvancado, String empresario, String membroCadi, LinkedList<String> alunos, LinkedList<String> professores,
@@ -25,7 +26,8 @@ public class Projeto {
 		this.empresario = empresario;
 		this.membroCadi = membroCadi;
 		this.senha = senha;
-		this.fase = fase;
+		this.status = fase;
+		this.excluido = false;
 		if(entregas != null) {
 			for(Entrega e:entregas) {
 				this.entregas.add(e);
@@ -108,7 +110,7 @@ public class Projeto {
 		this.linkAvancado = linkAvancado;
 	}
 	public String getEmpresario() {
-		return this.empresario;
+		return empresario;
 	}
 	public void setEmpresario(String empresario) {
 		this.empresario = empresario;
@@ -125,11 +127,17 @@ public class Projeto {
 	public void setSenha(String senha) {
 		this.senha = senha;
 	}
-	public int getFase() {
-		return fase;
+	public int getStatus() {
+		return status;
 	}
-	public void setFase(int fase) {
-		this.fase = fase;
+	public void setStatus(int fase) {
+		this.status = fase;
+	}
+	public boolean isExcluido() {
+		return excluido;
+	}
+	public void setExcluido(boolean excluido) {
+		this.excluido = excluido;
 	}
 	
 	
