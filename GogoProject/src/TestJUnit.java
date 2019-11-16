@@ -80,7 +80,8 @@ public class TestJUnit {
 	}
 	@Test
 	public void testProjeto() {
-		Projeto projeto = new Projeto(null,descricaoProjeto,null,tituloProjeto,linkProjeto,null,emailEmpresarioProjeto,null,null,null,null,0);
+		Projeto projeto = new Projeto(null,descricaoProjeto,null,tituloProjeto,linkProjeto,null,
+									  emailEmpresarioProjeto,null,null,null,null,0);
 		
 		assertEquals(projeto.getDescricao(),descricaoProjeto);
 		assertEquals(projeto.getTitulo(),tituloProjeto);
@@ -250,34 +251,37 @@ public class TestJUnit {
 		Projeto projeto = new Projeto(null,descricaoProjeto,null,tituloProjeto,linkProjeto,null,
 									  emailEmpresario,null,null,null,null,0);
 		Projeto projetoSecundario = new Projeto(null,descricaoProjeto,null,tituloProjetoSecundario,linkProjeto,null,
-				  emailEmpresario,null,null,null,null,0);
+				  								emailEmpresario,null,null,null,null,0);
+		Projeto projetoSecundarioRepetido = new Projeto(null,descricaoProjeto,null,tituloProjetoSecundario,linkProjeto,null,
+														emailEmpresario,null,null,null,null,0);
 		Projeto projetoRepetido = new Projeto(null,descricaoProjeto,null,tituloProjeto,linkProjeto,null,
-				  emailEmpresario,null,null,null,null,0);
+				  							  emailEmpresario,null,null,null,null,0);
 		Entrega entrega = new Entrega(linkGitEntrega,dataEntrega,linkDeployOpcionalEntrega,alunos);
 		
+		assertEquals(sis.aprovarProjetoFase1(projeto, emailCadi),404);
 		assertEquals(sis.cadastrarProjeto(projeto),201);
 		assertEquals(sis.cadastrarProjeto(projetoRepetido),409);
-		assertEquals(sis.buscarProjetoPorEmpresario(emailEmpresario).contains(projeto),true);
-		assertEquals(sis.buscarProjetoPorEmpresario(emailEmpresarioSecundario).isEmpty(),true);
+		assertEquals(sis.buscarProjetosPorEmpresario(emailEmpresario).contains(projeto),true);
+		assertEquals(sis.buscarProjetosPorEmpresario(emailEmpresarioSecundario).isEmpty(),true);
 		assertEquals(sis.buscarProjetosSemAvaliacao().isEmpty(),false);
 		assertEquals(sis.addDadosFase2(descricaoAvancadaProjeto, linkAvancadoProjeto, projeto),400);
 		
 		assertEquals(sis.aprovarProjetoFase1(projeto, emailCadi),200);
 		assertEquals(sis.buscarProjetosSemAvaliacao().isEmpty(),true);
 		assertEquals(sis.aprovarProjetoFase1(projeto, emailCadi),400);
-		assertEquals(sis.aprovarProjetoFase1(null, emailCadi),404);
+		assertEquals(sis.aprovarProjetoFase1(null, emailCadi),400);
 		assertEquals(sis.buscarProjetosPorMebroCadi(emailCadi).contains(projeto),true);
 		assertEquals(sis.buscarProjetosPorMebroCadi(emailCadiSecundario).isEmpty(),true);
 		
 		
 		assertEquals(sis.addProfessorProjeto(emailProfessor, projeto),201);
 		assertEquals(sis.addProfessorProjeto(emailProfessor, projeto),409);
-		assertEquals(sis.addProfessorProjeto(emailProfessor, null),404);
+		assertEquals(sis.addProfessorProjeto(emailProfessor, null),400);
 		assertEquals(sis.buscarProjetosPorProfessor(emailProfessor).contains(projeto),true);
 		assertEquals(sis.buscarProjetosPorProfessor(emailProfessorSecundario).isEmpty(),true);
 		
 		assertEquals(sis.gerarSenha(projeto),201);
-		assertEquals(sis.gerarSenha(null),404);
+		assertEquals(sis.gerarSenha(null),400);
 		assertEquals(sis.getProjetos().getFirst().getSenha() != null, true);
 		
 		assertEquals(sis.alunoParticiparProjeto(sis.getProjetos().getFirst().getSenha(), emailAluno),200);
@@ -287,19 +291,35 @@ public class TestJUnit {
 		assertEquals(sis.buscarProjetosPorAluno(emailAlunoSecundario).isEmpty(),true);
 		
 		assertEquals(sis.addDadosFase2(descricaoAvancadaProjeto, linkAvancadoProjeto, projeto),201);
-		assertEquals(sis.addDadosFase2(descricaoAvancadaProjeto, linkAvancadoProjeto, null),404);
+		assertEquals(sis.addDadosFase2(descricaoAvancadaProjeto, linkAvancadoProjeto, null),400);
 		
 		assertEquals(sis.aprovarProjetoFase2(projeto),200);
 		assertEquals(sis.aprovarProjetoFase2(projeto),400);
-		assertEquals(sis.aprovarProjetoFase2(null),404);
+		assertEquals(sis.aprovarProjetoFase2(null),400);
 		
 		assertEquals(sis.alunoEntregarProjeto(entrega, sis.getProjetos().getFirst().getSenha()),200);
 		assertEquals(sis.alunoEntregarProjeto(entrega, null),404);
 		
+		assertEquals(sis.finalizarProjeto(projeto),200);
+		assertEquals(sis.finalizarProjeto(projeto),400);
+		assertEquals(sis.finalizarProjeto(null),400);
+		assertEquals(sis.finalizarProjeto(projetoSecundario),404);
+		
+		assertEquals(sis.buscarProjetosFinalizadosPorAluno(emailAluno).contains(projeto),true);
+		assertEquals(sis.buscarProjetosFinalizadosPorEmpresario(emailEmpresario).contains(projeto),true);
+		assertEquals(sis.buscarProjetosFinalizadosPorMembroCadi(emailCadi).contains(projeto),true);
+		assertEquals(sis.buscarProjetosFinalizadosPorProfessor(emailProfessor).contains(projeto),true);
+		
 		sis.cadastrarProjeto(projetoSecundario);
-		assertEquals(sis.reprovarProjeto(projetoSecundario, emailCadi),200);
-		assertEquals(sis.getProjetos().getLast().getStatus(),-1);
-		assertEquals(sis.buscarProjetosPorMebroCadi(emailCadi).getLast(),projetoSecundario);
+		assertEquals(sis.buscarProjetosPorEmpresario(emailEmpresario).contains(projetoSecundario),true);
+		assertEquals(sis.excluirProjeto(projetoSecundario),200);
+		assertEquals(sis.buscarProjetosPorEmpresario(emailEmpresario).contains(projetoSecundario),false);
+		assertEquals(sis.excluirProjeto(projetoSecundario),404);
+		assertEquals(sis.reprovarProjeto(projetoSecundario, emailCadi),404);
+		assertEquals(sis.cadastrarProjeto(projetoSecundarioRepetido),201);
+		assertEquals(sis.buscarProjetosPorEmpresario(emailEmpresario).contains(projetoSecundarioRepetido),true);
+		assertEquals(sis.reprovarProjeto(projetoSecundarioRepetido, emailCadi),200);
+		assertEquals(sis.buscarProjetosPorMebroCadi(emailCadi).contains(projetoSecundarioRepetido),true);
 		
 		assertEquals(sis.cadastrarCadi(membroCadi), 201);
 		assertEquals(sis.cadastrarCadi(cadiRepetido), 409);
